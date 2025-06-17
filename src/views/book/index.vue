@@ -173,8 +173,6 @@ function reset() {
 
 /** 搜索按钮操作 */
 function handleQuery() {
-  console.log("publishDateRange", publishDateRange.value);
-
   if (publishDateRange.value.length !== 0) {
     queryParams.startDate = publishDateRange.value[0]
     queryParams.endDate = publishDateRange.value[1]
