@@ -1,16 +1,13 @@
 <template>
   <div class="navbar">
-    <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+    <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container"
+      @toggleClick="toggleSideBar" />
     <breadcrumb v-if="!settingsStore.topNav" id="breadcrumb-container" class="breadcrumb-container" />
     <top-nav v-if="settingsStore.topNav" id="topmenu-container" class="topmenu-container" />
 
     <div class="right-menu">
       <template v-if="appStore.device !== 'mobile'">
         <header-search id="header-search" class="right-menu-item" />
-
-        <el-tooltip content="源码地址" effect="dark" placement="bottom">
-          <ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />
-        </el-tooltip>
 
         <el-tooltip content="文档地址" effect="dark" placement="bottom">
           <ruo-yi-doc id="ruoyi-doc" class="right-menu-item hover-effect" />
@@ -35,7 +32,7 @@
           <img :src="userStore.avatar" class="user-avatar" />
           <span class="user-nickname"> {{ userStore.nickName }} </span>
         </div>
-        <template #dropdown>
+        <template #dropdown>userStore.avatar
           <el-dropdown-menu>
             <router-link to="/user/profile">
               <el-dropdown-item>个人中心</el-dropdown-item>
@@ -61,7 +58,6 @@ import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import HeaderSearch from '@/components/HeaderSearch'
-import RuoYiGit from '@/components/RuoYi/Git'
 import RuoYiDoc from '@/components/RuoYi/Doc'
 import useAppStore from '@/store/modules/app'
 import useUserStore from '@/store/modules/user'
@@ -69,6 +65,7 @@ import useSettingsStore from '@/store/modules/settings'
 
 const appStore = useAppStore()
 const userStore = useUserStore()
+console.log("userStore", userStore.avatar)
 const settingsStore = useSettingsStore()
 
 function toggleSideBar() {
@@ -178,7 +175,7 @@ function toggleTheme() {
 
         svg {
           transition: transform 0.3s;
-          
+
           &:hover {
             transform: scale(1.15);
           }
@@ -202,7 +199,7 @@ function toggleTheme() {
           border-radius: 50%;
         }
 
-        .user-nickname{
+        .user-nickname {
           position: relative;
           left: 5px;
           bottom: 10px;
