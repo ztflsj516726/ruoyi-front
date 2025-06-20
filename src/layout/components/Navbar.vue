@@ -32,7 +32,7 @@
           <img :src="userStore.avatar" class="user-avatar" />
           <span class="user-nickname"> {{ userStore.nickName }} </span>
         </div>
-        <template #dropdown>userStore.avatar
+        <template #dropdown>
           <el-dropdown-menu>
             <router-link to="/user/profile">
               <el-dropdown-item>个人中心</el-dropdown-item>
