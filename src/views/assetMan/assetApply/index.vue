@@ -45,22 +45,16 @@
 
     <el-table v-loading="loading" :data="assetList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="物资名称" align="center" prop="name" />
-      <el-table-column label="类别" align="center" prop="category">
-        <template #default="scope">
-          <dict-tag :options="asset_type" :value="scope.row.category" />
+      <el-table-column label="申请原因" align="center" prop="reason" />
+      <el-table-column label="申请时间" align="center" prop="createTime" />
+      <el-table-column label="申请人" align="center" prop="createBy" />
+      <el-table-column label="状态" align="center" prop="status">
+        <template #default="{ row }">
+          <dict-tag :options="asset_apply_status" :value="row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="规格型号" align="center" prop="model" />
-      <el-table-column label="单位" align="center" prop="unit">
-        <template #default="scope">
-          <dict-tag :options="asset_unit" :value="scope.row.unit" />
-        </template>
-      </el-table-column>
-      <el-table-column label="总库存" align="center" prop="totalStock" />
-      <el-table-column label="可用库存" align="center" prop="usableStock" />
-      <el-table-column label="购入日期" align="center" prop="purchaseDate" width="180" />
       <el-table-column label="备注" align="center" prop="remark" />
+      <el-table-column label="部门" align="center" prop="deptId" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="{ row }">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(row)"
@@ -95,12 +89,13 @@
   </div>
 </template>
 
-<script setup name="asset">
+<script setup name="assetApply">
 import { ref, reactive, onMounted, getCurrentInstance } from "vue"
 import { listAsset, getAsset, delAsset, addAsset, updateAsset } from "@/api/asset"
+import * as applyApi from "@/api/assetApply"
 
 const { proxy } = getCurrentInstance()
-const { asset_type, asset_unit } = proxy.useDict("asset_type", "asset_unit")
+const { asset_type, asset_unit,asset_apply_status } = proxy.useDict("asset_apply_status")
 
 // refs
 const queryForm = ref(null)
@@ -170,7 +165,7 @@ const formItems = reactive([
   { label: "单位", prop: "unit", type: "el-select", options: asset_unit, attrs: { placeholder: "请选择单位", style: "width: 100%" } },
   { label: "总库存", prop: "totalStock", type: "el-input", attrs: { placeholder: "请输入总库存" } },
   { label: "可用库存", prop: "usableStock", type: "el-input", attrs: { placeholder: "请输入可用库存" } },
-  { label: "购入日期", prop: "purchaseDate", type: "el-date-picker", attrs: { clearable: true, 'value-format': "YYYY-MM-DD", placeholder: "请选择购入日期",style: "width: 200px" } },
+  { label: "购入日期", prop: "purchaseDate", type: "el-date-picker", attrs: { clearable: true, 'value-format': "YYYY-MM-DD", placeholder: "请选择购入日期", style: "width: 200px" } },
   { label: "备注", prop: "remark", type: "el-input", attrs: { placeholder: "请输入备注", type: 'textarea' } },
 ])
 
@@ -178,7 +173,7 @@ const formItems = reactive([
 const getList = async () => {
   loading.value = true
   try {
-    const response = await listAsset(queryParams)
+    const response = await applyApi.applyList(queryParams)
     assetList.value = response.data
     total.value = response.total
   } catch (e) {
