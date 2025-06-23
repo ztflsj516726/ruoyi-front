@@ -7,6 +7,7 @@
       @close="close"
       :show-close="false"
       append-to-body
+      @open="dialogOpen"
     >
       <el-input
         v-model="search"
@@ -186,10 +187,22 @@ function selectActiveResult() {
     change(options.value[activeIndex.value])
   }
 }
+const dialogOpen = ()=>{
+  headerSearchSelectRef.value.focus()
+}
+function handleKeyDown(e) {
+  if (e.ctrlKey && e.key.toLowerCase() === 'k') {
+    e.preventDefault() // 阻止浏览器默认行为（如 Chrome 中是打开搜索）
+    show.value = true
+    options.value = searchPool.value
+  }
+}
+window.addEventListener('keydown', handleKeyDown)
 
 onMounted(() => {
   searchPool.value = generateRoutes(routes.value)
 })
+
 
 watch(searchPool, (list) => {
   initFuse(list)
