@@ -19,24 +19,22 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:asset:add']">
+        <el-button type="primary" plain icon="Plus" @click="handleAdd">
           新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate"
-          v-hasPermi="['system:asset:edit']">
+        <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate">
           修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete"
-          v-hasPermi="['system:asset:remove']">
+        <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete">
           删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:asset:export']">
+        <el-button type="warning" plain icon="Download" @click="handleExport">
           导出
         </el-button>
       </el-col>
@@ -63,10 +61,8 @@
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="{ row }">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(row)"
-            v-hasPermi="['system:post:edit']">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(row)"
-            v-hasPermi="['system:post:remove']">删除</el-button>
+          <el-button link type="primary" icon="Edit" @click="handleUpdate(row)">修改</el-button>
+          <el-button link type="primary" icon="Delete" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -170,7 +166,7 @@ const formItems = reactive([
   { label: "单位", prop: "unit", type: "el-select", options: asset_unit, attrs: { placeholder: "请选择单位", style: "width: 100%" } },
   { label: "总库存", prop: "totalStock", type: "el-input", attrs: { placeholder: "请输入总库存" } },
   { label: "可用库存", prop: "usableStock", type: "el-input", attrs: { placeholder: "请输入可用库存" } },
-  { label: "购入日期", prop: "purchaseDate", type: "el-date-picker", attrs: { clearable: true, 'value-format': "YYYY-MM-DD", placeholder: "请选择购入日期",style: "width: 200px" } },
+  { label: "购入日期", prop: "purchaseDate", type: "el-date-picker", attrs: { clearable: true, 'value-format': "YYYY-MM-DD", placeholder: "请选择购入日期", style: "width: 200px" } },
   { label: "备注", prop: "remark", type: "el-input", attrs: { placeholder: "请输入备注", type: 'textarea' } },
 ])
 
