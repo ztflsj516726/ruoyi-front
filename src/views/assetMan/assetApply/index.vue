@@ -289,8 +289,6 @@ const handleAsset = {
     form.detailList.push({ count: 0 })
   },
   deleteRow: (index) => {
-    console.log("index", index);
-
     form.detailList.splice(index, 1)
   }
 }
