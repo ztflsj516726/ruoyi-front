@@ -58,6 +58,8 @@ const unmatch = computed(() => {
   if (props.value === null || typeof props.value === 'undefined' || props.value === '' || !Array.isArray(props.options) || props.options.length === 0) return false
   // 传入值为数组
   let unmatch = false // 添加一个标志来判断是否有未匹配项
+  console.log("value",values.value);
+  
   values.value.forEach(item => {
     if (!props.options.some(v => v.value === item)) {
       unmatchArray.value.push(item)
