@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px"
+    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="100px"
       label-suffix="：">
       <template v-for="item in queryFormItems" :key="item.prop">
         <el-form-item :label="item.label" :prop="item.prop">
@@ -19,33 +19,40 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button type="primary" plain icon="Plus" @click="handleAdd">
+          新增
+        </el-button>
+      </el-col>
 
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
     </el-row>
 
-    <el-table v-loading="loading" :data="assetList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="申请原因" align="center" prop="reason" />
-      <el-table-column label="状态" align="center" prop="status">
+    <el-table v-loading="loading" :data="operRecordList">
+      <el-table-column label="物资" align="center" prop="assetId">
         <template #default="{ row }">
-          <dict-tag :options="asset_apply_status" :value="row.status" />
+          <dict-tag :options="assetListOptions" :value="row.assetId" />
         </template>
       </el-table-column>
-      <el-table-column label="部门" align="center" prop="deptName"/>
-      <el-table-column label="申请人" align="center" prop="createBy" />
-      <el-table-column label="申请时间" align="center" prop="createTime" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作类型" align="center">
         <template #default="{ row }">
-          <el-button link type="primary" icon="Edit" @click="handle(row)" v-if="row.status === 'pending'">处理</el-button>
+          <dict-tag :options="oper_type" :value="row.operType" />
         </template>
       </el-table-column>
+      <el-table-column label="数量" align="center">
+        <template #default="{ row }">
+          <span>{{ row.operType === 'in' ? '+' : '-' }} {{ row.operNum }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作人" align="center" prop="createBy" />
+      <el-table-column label="操作时间" align="center" prop="createTime" />
     </el-table>
 
     <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
       @pagination="getList" />
 
     <!-- 添加或修改物资信息对话框 -->
-    <el-dialog title="物资申请审批" v-model="open" width="700px" append-to-body align-center>
+    <el-dialog :title v-model="open" width="700px" append-to-body align-center>
       <el-form ref="formRef" :model="form" label-width="100px" label-suffix="：">
         <template v-for="item in formItems" :key="item.prop">
           <el-form-item :label="item.label" :prop="item.prop">
@@ -56,20 +63,9 @@
             </component>
           </el-form-item>
         </template>
-        <el-form-item label="物资列表">
-          <el-table border height="300px" :data="form.detailList">
-            <el-table-column label="物资" align="center">
-              <template #default="{ row }">
-                <dict-tag :options="assetListOptions" :value="row.assetId" />
-              </template>
-            </el-table-column>
-            <el-table-column label="数量" align="center" prop="count" />
-          </el-table>
-        </el-form-item>
       </el-form>
       <template #footer>
-        <el-button type="primary" @click="submitForm('approve')">同 意</el-button>
-        <el-button type="danger" @click="submitForm('rejected')">驳 回</el-button>
+        <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </template>
     </el-dialog>
@@ -79,11 +75,10 @@
 <script setup name="assetApply">
 import { ref, reactive, onMounted, getCurrentInstance } from "vue"
 import { listAsset } from "@/api/asset"
-import { applyDetail } from "@/api/assetApply"
-import * as myTodoApi from '@/api/mytodo'
+import { OperList, OperSave } from "@/api/assetInOut"
 
 const { proxy } = getCurrentInstance()
-const { asset_apply_status } = proxy.useDict("asset_apply_status")
+const { oper_type } = proxy.useDict("oper_type")
 
 
 // refs
@@ -94,7 +89,8 @@ const formRef = ref(null)
 const loading = ref(false)
 let showSearch = ref(true)
 const total = ref(0)
-const assetList = ref([])
+let operRecordList = ref([])
+const title = ref("")
 const open = ref(false)
 
 // 查询参数
@@ -103,26 +99,33 @@ const queryParams = reactive({})
 // 表单数据
 const form = reactive({
   detailList: [],
-  reason: ''
+  reason: [],
+  checkUserId: ''
 })
+
+let userList = ref([])
+let assetListOptions = ref([])
 
 
 // 查询表单项配置
 const queryFormItems = reactive([
-  { label: "状态", prop: "status", type: "el-select", options: asset_apply_status, attrs: { placeholder: "请选择类别", clearable: true, style: "width: 200px", filterable: true }, onEnter: true },
+  { label: "操作类型", prop: "operType", type: "el-select", options: oper_type, attrs: { placeholder: "请选择操作类型", clearable: true, style: "width: 200px", filterable: true }, onEnter: true },
+  { label: "物资", prop: "assetId", type: "el-select", options: assetListOptions, attrs: { placeholder: "请选择物资", clearable: true, style: "width: 200px", filterable: true }, onEnter: true },
 ])
 
 // 编辑表单项配置
 const formItems = reactive([
-  { label: "申请原因", prop: "reason", type: "el-input", attrs: { placeholder: "请输入申请原因", disabled: true } },
+  { label: "物资", prop: "assetId", type: "el-select", options: assetListOptions, attrs: { placeholder: "请选择物资", clearable: true, filterable: true } },
+  { label: "操作类型", prop: "operType", type: "el-select", options: oper_type, attrs: { placeholder: "请选择操作类型", clearable: true, filterable: true } },
+  { label: "数量", prop: "operNum", type: "el-input-number", options: oper_type, attrs: { placeholder: "请输入数量", min: 0, max: 9999 } },
 ])
 
 // 方法
 const getList = async () => {
   loading.value = true
   try {
-    const response = await myTodoApi.myToList(queryParams)
-    assetList.value = response.data
+    const response = await OperList(queryParams)
+    operRecordList.value = response.data
     total.value = response.total
   } catch (e) {
     proxy.$modal.msgError("获取数据失败")
@@ -135,16 +138,10 @@ const cancel = () => {
   open.value = false
   reset()
 }
-function resetForm(refName) {
-  if (refName === "form" && formRef.value) {
-    formRef.value.resetFields()
-  } else if (refName === "queryForm" && queryForm.value) {
-    queryForm.value.resetFields()
-  }
-}
 
 const reset = () => {
   Object.keys(form).forEach(key => form[key] = null)
+  form.detailList = []
   resetForm("form")
 }
 
@@ -158,31 +155,39 @@ const resetQuery = () => {
   handleQuery()
 }
 
-const handle = (row) => {
-  currentRow = row
+
+const handleAdd = () => {
   reset()
-  applyDetail(row.id).then(res => {
-    open.value = true
-    Object.assign(form, res.data)
-  })
+  open.value = true
+  title.value = "添加入库报废信息"
 }
-let currentRow = {}
-const submitForm = (type) => {
 
-  let handle = type === 'approve' ? myTodoApi.approve : myTodoApi.reject
-  let msg = type === 'approve' ? '同意' : '拒绝'
-  proxy.$modal.confirm(`是否${msg}该申请单？`).then(() => {
-    return handle(currentRow.id)
+
+const submitForm = () => {
+  if (!formRef.value) return
+  loading.value = true
+  OperSave(form).then(() => {
+    proxy.$modal.msgSuccess("操作成功")
+    open.value = false
+    getList()
   })
-    .then(() => {
-      proxy.$modal.msgSuccess('处理成功')
-      open.value = false
-      getList()
+    .catch(() => {
+      proxy.$modal.msgError("操作失败")
     })
-
+    .finally(() => {
+      loading.value = false
+    })
 }
 
-let assetListOptions = ref([])
+// 重置表单
+function resetForm(refName) {
+  if (refName === "form" && formRef.value) {
+    formRef.value.resetFields()
+  } else if (refName === "queryForm" && queryForm.value) {
+    queryForm.value.resetFields()
+  }
+}
+
 const getAssetList = () => {
   listAsset({ pageNum: 1, pageSize: 9999 }).then(res => {
     assetListOptions.value = res.data.map(item => {

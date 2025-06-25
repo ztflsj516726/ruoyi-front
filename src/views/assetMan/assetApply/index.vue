@@ -50,11 +50,7 @@
           <dict-tag :options="asset_apply_status" :value="row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="部门" align="center" prop="deptId">
-        <template #default="{ row }">
-          <dict-tag :options="deptList" :value="row.deptId" />
-        </template>
-      </el-table-column>
+      <el-table-column label="部门" align="center" prop="deptName"/>
       <el-table-column label="申请人" align="center" prop="createBy" />
       <el-table-column label="申请时间" align="center" prop="createTime" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -118,7 +114,6 @@
 <script setup name="assetApply">
 import { ref, reactive, onMounted, getCurrentInstance } from "vue"
 import * as applyApi from "@/api/assetApply"
-import { listDept } from "@/api/system/dept"
 import { listAsset } from "@/api/asset"
 import { listUser } from "@/api/system/user"
 
@@ -151,14 +146,12 @@ const form = reactive({
   checkUserId: ''
 })
 
-let deptList = ref([])
 
 let userList = ref([])
 
 
 // 查询表单项配置
 const queryFormItems = reactive([
-  { label: "部门", prop: "deptId", type: "el-select", options: deptList, attrs: { placeholder: "请选择部门", clearable: true, style: "width: 200px", filterable: true }, onEnter: true },
   { label: "状态", prop: "status", type: "el-select", options: asset_apply_status, attrs: { placeholder: "请选择类别", clearable: true, style: "width: 200px", filterable: true }, onEnter: true },
   { label: "审批人", prop: "checkUserId", type: "el-select", options: userList, attrs: { placeholder: "请选择审批人", clearable: true, style: "width: 200px", filterable: true }, onEnter: true },
 ])
@@ -230,8 +223,6 @@ const handleUpdate = (row) => {
   const id = row?.id || ids.value
   applyApi.applyDetail(id).then((response) => {
     Object.assign(form, response.data)
-    console.log("form", form);
-
     open.value = true
     title.value = "修改申请单信息"
   })
@@ -274,16 +265,6 @@ function resetForm(refName) {
   }
 }
 
-const getDeptList = () => {
-  listDept().then(res => {
-    deptList.value = res.data.map(item => {
-      return {
-        label: item.deptName,
-        value: String(item.deptId),
-      }
-    })
-  })
-}
 let assetListOptions = ref([])
 const getAssetList = () => {
   listAsset({ pageNum: 1, pageSize: 9999 }).then(res => {
@@ -304,7 +285,6 @@ const getUserList = () => {
       }
     })
   })
-
 }
 
 const handleAsset = {
@@ -318,7 +298,6 @@ const handleAsset = {
 
 onMounted(() => {
   getList()
-  getDeptList()
   getAssetList()
   getUserList()
 })

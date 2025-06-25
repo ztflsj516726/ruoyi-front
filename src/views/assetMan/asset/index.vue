@@ -62,7 +62,7 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="{ row }">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(row)">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(row)">删除</el-button>
+          <el-button link type="danger" icon="Delete" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -153,8 +153,6 @@ const queryFormItems = reactive([
   { label: "类别", prop: "category", type: "el-select", options: asset_type, attrs: { placeholder: "请选择类别", clearable: true, style: "width: 200px" }, onEnter: true },
   { label: "规格型号", prop: "model", type: "el-input", attrs: { placeholder: "请输入规格型号", clearable: true }, onEnter: true },
   { label: "单位", prop: "unit", type: "el-select", options: asset_unit, attrs: { placeholder: "请选择单位", clearable: true, style: "width: 200px" }, onEnter: true },
-  { label: "总库存", prop: "totalStock", type: "el-input", attrs: { placeholder: "请输入总库存", clearable: true }, onEnter: true },
-  { label: "可用库存", prop: "usableStock", type: "el-input", attrs: { placeholder: "请输入可用库存", clearable: true }, onEnter: true },
   { label: "购入日期", prop: "purchaseDate", type: "el-date-picker", attrs: { clearable: true, 'value-format': "YYYY-MM-DD", placeholder: "请选择购入日期", style: "width: 200px" } },
 ])
 
@@ -164,8 +162,6 @@ const formItems = reactive([
   { label: "类别", prop: "category", type: "el-select", options: asset_type, attrs: { placeholder: "请选择类别", style: "width: 100%" } },
   { label: "规格型号", prop: "model", type: "el-input", attrs: { placeholder: "请输入规格型号" } },
   { label: "单位", prop: "unit", type: "el-select", options: asset_unit, attrs: { placeholder: "请选择单位", style: "width: 100%" } },
-  { label: "总库存", prop: "totalStock", type: "el-input", attrs: { placeholder: "请输入总库存" } },
-  { label: "可用库存", prop: "usableStock", type: "el-input", attrs: { placeholder: "请输入可用库存" } },
   { label: "购入日期", prop: "purchaseDate", type: "el-date-picker", attrs: { clearable: true, 'value-format': "YYYY-MM-DD", placeholder: "请选择购入日期", style: "width: 200px" } },
   { label: "备注", prop: "remark", type: "el-input", attrs: { placeholder: "请输入备注", type: 'textarea' } },
 ])
@@ -274,6 +270,11 @@ function resetForm(refName) {
     queryForm.value.resetFields()
   }
 }
+
+watch(()=>form.totalStock,()=>{
+  console.log("form.totalStock",form.totalStock);
+  
+})
 
 onMounted(() => {
   getList()
