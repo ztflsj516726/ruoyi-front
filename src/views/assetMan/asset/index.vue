@@ -41,7 +41,8 @@
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
     </el-row>
 
-    <el-table v-loading="loading" :data="assetList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="assetList" @selection-change="handleSelectionChange"
+      :row-class-name="rowClass">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="物资名称" align="center" prop="name" />
       <el-table-column label="类别" align="center" prop="category">
@@ -52,6 +53,12 @@
       <el-table-column label="规格型号" align="center" prop="model" />
       <el-table-column label="总库存" align="center" prop="totalStock" />
       <el-table-column label="可用库存" align="center" prop="usableStock" />
+      <el-table-column label="告警阈值" align="center" prop="minThreshold">
+        <template #default="{ row }">
+          <span style="color: #a70000;" v-if="row.minThreshold >= row.usableStock">{{ row?.minThreshold }}</span>
+          <span v-else>{{ row?.minThreshold }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="购入日期" align="center" prop="purchaseDate" width="180" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -89,6 +96,7 @@
 <script setup name="asset">
 import { ref, reactive, onMounted, getCurrentInstance } from "vue"
 import { listAsset, getAsset, delAsset, addAsset, updateAsset } from "@/api/asset"
+import { rowProps } from "element-plus"
 
 const { proxy } = getCurrentInstance()
 const { asset_type, asset_unit } = proxy.useDict("asset_type", "asset_unit")
@@ -155,6 +163,7 @@ const formItems = reactive([
   { label: "物资名称", prop: "name", type: "el-input", attrs: { placeholder: "请输入物资名称" } },
   { label: "类别", prop: "category", type: "el-select", options: asset_type, attrs: { placeholder: "请选择类别", style: "width: 100%" } },
   { label: "规格型号", prop: "model", type: "el-input", attrs: { placeholder: "请输入规格型号" } },
+  { label: "告警阈值", prop: "minThreshold", type: "el-input-number", attrs: { placeholder: "请输入告警阈值", clearable: true, min: 0 }, onEnter: true },
   { label: "购入日期", prop: "purchaseDate", type: "el-date-picker", attrs: { clearable: true, 'value-format': "YYYY-MM-DD", placeholder: "请选择购入日期", style: "width: 200px" } },
   { label: "备注", prop: "remark", type: "el-input", attrs: { placeholder: "请输入备注", type: 'textarea' } },
 ])
@@ -264,12 +273,57 @@ function resetForm(refName) {
   }
 }
 
-watch(()=>form.totalStock,()=>{
-  console.log("form.totalStock",form.totalStock);
-  
-})
+const rowClass = ({ row, rowIndex }) => {
+  if (row.minThreshold >= row.usableStock) {
+    return "warning-row"
+  }
+}
+
 
 onMounted(() => {
   getList()
 })
 </script>
+<style lang="scss" scope>
+/* 动态闪烁背景色 */
+@keyframes warningPulse {
+
+  0%,
+  100% {
+    background-color: #fff0f0;
+    box-shadow: 0 0 5px 0 rgba(255, 0, 0, 0.2);
+  }
+
+  50% {
+    background-color: #ff6666;
+    box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.6);
+  }
+}
+
+@keyframes warningShake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-3px);
+  }
+
+  50% {
+    transform: translateX(3px);
+  }
+
+  75% {
+    transform: translateX(-3px);
+  }
+}
+
+.warning-row {
+  animation: warningPulse 2s infinite, warningShake 0.5s infinite;
+  position: relative;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+</style>

@@ -79,7 +79,7 @@ import { listAsset } from "@/api/asset"
 import { OperList, OperSave } from "@/api/assetInOut"
 
 const { proxy } = getCurrentInstance()
-const { oper_type } = proxy.useDict("oper_type")
+const { oper_type, oper_type_add } = proxy.useDict("oper_type", "oper_type_add")
 
 
 // refs
@@ -104,7 +104,6 @@ const form = reactive({
   checkUserId: ''
 })
 
-let userList = ref([])
 let assetListOptions = ref([])
 
 
@@ -117,8 +116,8 @@ const queryFormItems = reactive([
 // 编辑表单项配置
 const formItems = reactive([
   { label: "物资", prop: "assetId", type: "el-select", options: assetListOptions, attrs: { placeholder: "请选择物资", clearable: true, filterable: true } },
-  { label: "操作类型", prop: "operType", type: "el-select", options: oper_type, attrs: { placeholder: "请选择操作类型", clearable: true, filterable: true } },
-  { label: "数量", prop: "operNum", type: "el-input-number", options: oper_type, attrs: { placeholder: "请输入数量", min: 0, max: 9999 } },
+  { label: "操作类型", prop: "operType", type: "el-select", options: oper_type_add, attrs: { placeholder: "请选择操作类型", clearable: true, filterable: true } },
+  { label: "数量", prop: "operNum", type: "el-input-number", attrs: { placeholder: "请输入数量", min: 0, max: 9999 } },
 ])
 
 // 方法
