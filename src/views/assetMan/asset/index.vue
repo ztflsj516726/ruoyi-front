@@ -50,11 +50,6 @@
         </template>
       </el-table-column>
       <el-table-column label="规格型号" align="center" prop="model" />
-      <el-table-column label="单位" align="center" prop="unit">
-        <template #default="scope">
-          <dict-tag :options="asset_unit" :value="scope.row.unit" />
-        </template>
-      </el-table-column>
       <el-table-column label="总库存" align="center" prop="totalStock" />
       <el-table-column label="可用库存" align="center" prop="usableStock" />
       <el-table-column label="购入日期" align="center" prop="purchaseDate" width="180" />
@@ -152,7 +147,6 @@ const queryFormItems = reactive([
   { label: "物资名称", prop: "name", type: "el-input", attrs: { placeholder: "请输入物资名称", clearable: true }, onEnter: true },
   { label: "类别", prop: "category", type: "el-select", options: asset_type, attrs: { placeholder: "请选择类别", clearable: true, style: "width: 200px" }, onEnter: true },
   { label: "规格型号", prop: "model", type: "el-input", attrs: { placeholder: "请输入规格型号", clearable: true }, onEnter: true },
-  { label: "单位", prop: "unit", type: "el-select", options: asset_unit, attrs: { placeholder: "请选择单位", clearable: true, style: "width: 200px" }, onEnter: true },
   { label: "购入日期", prop: "purchaseDate", type: "el-date-picker", attrs: { clearable: true, 'value-format': "YYYY-MM-DD", placeholder: "请选择购入日期", style: "width: 200px" } },
 ])
 
@@ -161,7 +155,6 @@ const formItems = reactive([
   { label: "物资名称", prop: "name", type: "el-input", attrs: { placeholder: "请输入物资名称" } },
   { label: "类别", prop: "category", type: "el-select", options: asset_type, attrs: { placeholder: "请选择类别", style: "width: 100%" } },
   { label: "规格型号", prop: "model", type: "el-input", attrs: { placeholder: "请输入规格型号" } },
-  { label: "单位", prop: "unit", type: "el-select", options: asset_unit, attrs: { placeholder: "请选择单位", style: "width: 100%" } },
   { label: "购入日期", prop: "purchaseDate", type: "el-date-picker", attrs: { clearable: true, 'value-format': "YYYY-MM-DD", placeholder: "请选择购入日期", style: "width: 200px" } },
   { label: "备注", prop: "remark", type: "el-input", attrs: { placeholder: "请输入备注", type: 'textarea' } },
 ])

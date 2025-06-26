@@ -44,7 +44,8 @@
           <span>{{ row.operType === 'in' ? '+' : '-' }} {{ row.operNum }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作人" align="center" prop="createBy" />
+      <el-table-column label="可用库存" align="center" prop="afterUseableStock" />
+      <el-table-column label="操作人/申请人" align="center" prop="createBy" />
       <el-table-column label="操作时间" align="center" prop="createTime" />
     </el-table>
 
