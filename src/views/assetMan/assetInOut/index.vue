@@ -41,7 +41,7 @@
       </el-table-column>
       <el-table-column label="数量" align="center">
         <template #default="{ row }">
-          <span>{{ row.operType === 'in' ? '+' : '-' }} {{ row.operNum }}</span>
+          <span>{{ ['in', 'back'].includes(row.operType) ? '+' : '-' }} {{ row.operNum }}</span>
         </template>
       </el-table-column>
       <el-table-column label="可用库存" align="center" prop="afterUseableStock" />

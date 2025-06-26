@@ -61,6 +61,8 @@
             v-if="['draft', 'rejected'].includes(row.status)">修改</el-button>
           <el-button link type="primary" icon="Delete" @click="handleDelete(row)"
             v-if="row.status === 'draft'">删除</el-button>
+          <el-button link type="primary" icon="Back" @click="handleBack(row)"
+            v-if="row.status === 'approved'">归还</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -253,8 +255,17 @@ const handleDelete = (row) => {
       getList()
       proxy.$modal.msgSuccess("删除成功")
     })
-    .catch(() => { })
 }
+
+const handleBack = (row) => {
+  proxy.$modal.confirm('是否确认归还该物资吗？')
+    .then(() => applyApi.backApply(row.id))
+    .then(() => {
+      getList()
+      proxy.$modal.msgSuccess("归还成功")
+    })
+}
+
 
 // 重置表单
 function resetForm(refName) {

@@ -48,3 +48,11 @@ export function submitApply(id) {
     method: "post",
   });
 }
+
+// 物资申请单归还
+export function backApply(id) {
+  return request({
+    url: `assetApply/back/${id}`,
+    method: "post",
+  });
+}
