@@ -118,9 +118,10 @@ import { ref, reactive, onMounted, getCurrentInstance } from "vue"
 import * as applyApi from "@/api/assetApply"
 import { listAsset } from "@/api/asset"
 import { listUser } from "@/api/system/user"
-
+import useUserStore from '@/store/modules/user'
 const { proxy } = getCurrentInstance()
 const { asset_apply_status } = proxy.useDict("asset_apply_status")
+const userStore = useUserStore()
 
 
 // refs
@@ -297,7 +298,7 @@ const getUserList = () => {
         label: item.nickName,
         value: item.userId
       }
-    })
+    }).filter(item => item.value !== userStore.id)
   })
 }
 
