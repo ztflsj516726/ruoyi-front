@@ -1,26 +1,27 @@
 <template>
-  <div :class="{ 'hidden': hidden }" class="pagination-container">
+  <div v-show="!hidden" class="pagination-container">
     <el-pagination
       :background="background"
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
+      :current-page="currentPage"
+      :page-size="pageSize"
       :layout="layout"
       :page-sizes="pageSizes"
       :pager-count="pagerCount"
       :total="total"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
+      @size-change="onSizeChange"
+      @current-change="onCurrentChange"
     />
   </div>
 </template>
 
 <script setup>
+import { computed, watch } from 'vue'
 import { scrollTo } from '@/utils/scroll-to'
 
 const props = defineProps({
   total: {
-    required: true,
-    type: Number
+    type: Number,
+    required: true
   },
   page: {
     type: Number,
@@ -32,14 +33,11 @@ const props = defineProps({
   },
   pageSizes: {
     type: Array,
-    default() {
-      return [10, 20, 30, 50]
-    }
+    default: () => [10, 20, 30, 50]
   },
-  // 移动端页码按钮的数量端默认值5
   pagerCount: {
     type: Number,
-    default: document.body.clientWidth < 992 ? 5 : 7
+    default: () => (typeof window !== 'undefined' && window.innerWidth < 992 ? 5 : 7)
   },
   layout: {
     type: String,
@@ -59,47 +57,56 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits()
+const emit = defineEmits(['update:page', 'update:limit', 'pagination'])
+
 const currentPage = computed({
-  get() {
-    return props.page
-  },
-  set(val) {
-    emit('update:page', val)
-  }
+  get: () => props.page,
+  set: val => emit('update:page', val)
 })
+
 const pageSize = computed({
-  get() {
-    return props.limit
-  },
-  set(val){
-    emit('update:limit', val)
-  }
+  get: () => props.limit,
+  set: val => emit('update:limit', val)
 })
 
-function handleSizeChange(val) {
-  if (currentPage.value * val > props.total) {
+// 保证页码在切换 pageSize 时不会超出最大页数
+function onSizeChange(val) {
+  if (Math.ceil(props.total / val) < currentPage.value) {
     currentPage.value = 1
+    emit('update:page', 1)
   }
-  emit('pagination', { page: currentPage.value, limit: val })
+  emit('update:limit', val)
+  emit('pagination')
   if (props.autoScroll) {
-    scrollTo(0, 800)
+    scrollTo(0, 300)
   }
 }
 
-function handleCurrentChange(val) {
-  emit('pagination', { page: val, limit: pageSize.value })
+function onCurrentChange(val) {
+  emit('update:page', val)
+  emit('pagination')
   if (props.autoScroll) {
-    scrollTo(0, 800)
+    scrollTo(0, 300)
   }
 }
+
+// 监听 total/pageSize 变化自动修正 currentPage
+watch(
+  () => [props.total, pageSize.value],
+  ([total, size]) => {
+    const maxPage = Math.max(1, Math.ceil(total / size))
+    if (currentPage.value > maxPage) {
+      currentPage.value = maxPage
+      emit('update:page', maxPage)
+    }
+  }
+)
 </script>
 
 <style scoped>
 .pagination-container {
   background: #fff;
-}
-.pagination-container.hidden {
-  display: none;
+  padding: 16px 0 0 0;
+  text-align: right;
 }
 </style>

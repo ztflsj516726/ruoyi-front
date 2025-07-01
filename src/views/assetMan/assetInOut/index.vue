@@ -49,8 +49,8 @@
       <el-table-column label="操作时间" align="center" prop="createTime" />
     </el-table>
 
-    <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
-      @pagination="getList" />
+    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize" @pagination="getList" />
 
     <!-- 添加或修改物资信息对话框 -->
     <el-dialog :title v-model="open" width="700px" append-to-body align-center>
@@ -95,7 +95,10 @@ const title = ref("")
 const open = ref(false)
 
 // 查询参数
-const queryParams = reactive({})
+const queryParams = ref({
+  pageNum: 1,
+  pageSize: 10,
+})
 
 // 表单数据
 const form = reactive({
@@ -122,11 +125,13 @@ const formItems = reactive([
 
 // 方法
 const getList = async () => {
+  console.log("queryParams", queryParams);
   loading.value = true
   try {
-    const response = await OperList(queryParams)
+    const response = await OperList(queryParams.value)
     operRecordList.value = response.data
     total.value = response.total
+    console.log("total", total.value);
   } catch (e) {
     proxy.$modal.msgError("获取数据失败")
   } finally {
@@ -146,7 +151,7 @@ const reset = () => {
 }
 
 const handleQuery = () => {
-  queryParams.pageNum = 1
+  queryParams.value.pageNum = 1
   getList()
 }
 
