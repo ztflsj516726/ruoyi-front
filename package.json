@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "vite",
     "build:prod": "vite build",
+    "build:vir": "vite build --mode virtual",
     "build:stage": "vite build --mode staging",
     "preview": "vite preview"
   },
