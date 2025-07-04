@@ -115,7 +115,7 @@
 
 <script setup name="assetApply">
 import { ref, reactive, onMounted, getCurrentInstance } from "vue"
-import * as applyApi from "@/api/assetApply"
+import * as applyApi from "@/api/assetOutApply"
 import { listAsset } from "@/api/asset"
 import { listUser } from "@/api/system/user"
 import useUserStore from '@/store/modules/user'

@@ -3,7 +3,7 @@ import request from "@/utils/request";
 // 申请单新增/修改
 export function applySave(data) {
   return request({
-    url: "/assetApply/applySave",
+    url: "/assetOutApply/applySave",
     method: "post",
     data,
   });
@@ -18,7 +18,7 @@ export function deleteApply(data) {
     dataParams = data;
   }
   return request({
-    url: "/assetApply/delete",
+    url: "/assetOutApply/delete",
     method: "post",
     data: dataParams,
   });
@@ -27,7 +27,7 @@ export function deleteApply(data) {
 // 申请单详情
 export function applyDetail(id) {
   return request({
-    url: `/assetApply/detail/${id}`,
+    url: `/assetOutApply/detail/${id}`,
     method: "get",
   });
 }
@@ -35,7 +35,7 @@ export function applyDetail(id) {
 // 物资申请列表
 export function applyList(params) {
   return request({
-    url: `assetApply/list`,
+    url: `assetOutApply/list`,
     method: "get",
     params,
   });
@@ -44,7 +44,7 @@ export function applyList(params) {
 // 物资申请单提交
 export function submitApply(id) {
   return request({
-    url: `assetApply/submit/${id}`,
+    url: `assetOutApply/submit/${id}`,
     method: "post",
   });
 }
@@ -52,7 +52,7 @@ export function submitApply(id) {
 // 物资申请单归还
 export function backApply(id) {
   return request({
-    url: `assetApply/back/${id}`,
+    url: `assetOutApply/back/${id}`,
     method: "post",
   });
 }

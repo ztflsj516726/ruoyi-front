@@ -79,7 +79,7 @@
 <script setup name="assetApply">
 import { ref, reactive, onMounted, getCurrentInstance } from "vue"
 import { listAsset } from "@/api/asset"
-import { applyDetail } from "@/api/assetApply"
+import { applyDetail } from "@/api/assetOutApply"
 import * as myTodoApi from '@/api/mytodo'
 
 const { proxy } = getCurrentInstance()
