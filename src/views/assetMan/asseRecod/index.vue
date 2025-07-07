@@ -49,7 +49,7 @@
 <script setup name="assetApply">
 import { ref, reactive, onMounted, getCurrentInstance } from "vue"
 import { listAsset } from "@/api/asset"
-import { OperList } from "@/api/assetInOut"
+import { OperList } from "@/api/asseRecod"
 
 const { proxy } = getCurrentInstance()
 const { oper_type } = proxy.useDict("oper_type")

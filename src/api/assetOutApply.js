@@ -1,7 +1,7 @@
 import request from "@/utils/request";
 
-// 申请单新增/修改
-export function applySave(data) {
+// 出库申请单新增/修改
+export function applyOutSave(data) {
   return request({
     url: "/assetOutApply/applySave",
     method: "post",
@@ -9,8 +9,8 @@ export function applySave(data) {
   });
 }
 
-// 删除申请单
-export function deleteApply(data) {
+// 删除出库申请单
+export function deleteOutApply(data) {
   let dataParams = [];
   if (!Array.isArray(data)) {
     dataParams = [data];
@@ -24,8 +24,8 @@ export function deleteApply(data) {
   });
 }
 
-// 申请单详情
-export function applyDetail(id) {
+// 出库申请单详情
+export function applyOutDetail(id) {
   return request({
     url: `/assetOutApply/detail/${id}`,
     method: "get",
@@ -33,7 +33,7 @@ export function applyDetail(id) {
 }
 
 // 物资申请列表
-export function applyList(params) {
+export function applyOutList(params) {
   return request({
     url: `assetOutApply/list`,
     method: "get",
@@ -41,16 +41,16 @@ export function applyList(params) {
   });
 }
 
-// 物资申请单提交
-export function submitApply(id) {
+// 物资出库申请单提交
+export function submitOutApply(id) {
   return request({
     url: `assetOutApply/submit/${id}`,
     method: "post",
   });
 }
 
-// 物资申请单归还
-export function backApply(id) {
+// 物资出库申请单归还
+export function backOutApply(id) {
   return request({
     url: `assetOutApply/back/${id}`,
     method: "post",

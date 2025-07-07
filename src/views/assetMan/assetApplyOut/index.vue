@@ -40,11 +40,7 @@
     <el-table v-loading="loading" :data="assetList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="申请原因" align="center" prop="reason" />
-      <el-table-column label="审批人" align="center">
-        <template #default="{ row }">
-          <dict-tag :options="userList" :value="row.checkUserId" />
-        </template>
-      </el-table-column>
+      <el-table-column label="申请单号" align="center" prop="applyCode" />
       <el-table-column label="状态" align="center" prop="status">
         <template #default="{ row }">
           <dict-tag :options="asset_apply_status" :value="row.status" />
@@ -115,7 +111,7 @@
 
 <script setup name="assetApply">
 import { ref, reactive, onMounted, getCurrentInstance } from "vue"
-import * as applyApi from "@/api/assetOutApply"
+import * as applyOutApi from "@/api/assetOutApply"
 import { listAsset } from "@/api/asset"
 import { listUser } from "@/api/system/user"
 import useUserStore from '@/store/modules/user'
@@ -149,7 +145,6 @@ const queryParams = reactive({
 const form = reactive({
   detailList: [],
   reason: [],
-  checkUserId: ''
 })
 
 
@@ -159,20 +154,19 @@ let userList = ref([])
 // 查询表单项配置
 const queryFormItems = reactive([
   { label: "状态", prop: "status", type: "el-select", options: asset_apply_status, attrs: { placeholder: "请选择类别", clearable: true, style: "width: 200px", filterable: true }, onEnter: true },
-  { label: "审批人", prop: "checkUserId", type: "el-select", options: userList, attrs: { placeholder: "请选择审批人", clearable: true, style: "width: 200px", filterable: true }, onEnter: true },
+  { label: "申请单号", prop: "applyCode", type: "el-input",  attrs: { placeholder: "请输入申请单号", clearable: true, style: "width: 200px", filterable: true }, onEnter: true },
 ])
 
 // 编辑表单项配置
 const formItems = reactive([
   { label: "申请原因", prop: "reason", type: "el-input", attrs: { placeholder: "请输入申请原因" } },
-  { label: "审批人", prop: "checkUserId", type: "el-select", options: userList, attrs: { placeholder: "请选择审批人", clearable: true, filterable: true }, onEnter: true },
 ])
 
 // 方法
 const getList = async () => {
   loading.value = true
   try {
-    const response = await applyApi.applyList(queryParams)
+    const response = await applyOutApi.applyOutList(queryParams)
     assetList.value = response.data
     total.value = response.total
   } catch (e) {
@@ -217,7 +211,7 @@ const handleAdd = () => {
 
 const handleSubmit = (row) => {
   proxy.$modal.confirm('是否确认该申请单？')
-    .then(() => applyApi.submitApply(row.id))
+    .then(() => applyOutApi.submitOutApply(row.id))
     .then(() => {
       getList()
       proxy.$modal.msgSuccess("提交成功")
@@ -227,7 +221,7 @@ const handleSubmit = (row) => {
 const handleUpdate = (row) => {
   reset()
   const id = row?.id || ids.value
-  applyApi.applyDetail(id).then((response) => {
+  applyOutApi.applyOutDetail(id).then((response) => {
     Object.assign(form, response.data)
     open.value = true
     title.value = "修改申请单信息"
@@ -238,7 +232,7 @@ const submitForm = () => {
   console.log("form", form);
   if (!formRef.value) return
   loading.value = true
-  applyApi.applySave(form).then(() => {
+  applyOutApi.applyOutSave(form).then(() => {
     proxy.$modal.msgSuccess(form.id != null ? "修改成功" : "新增成功")
     open.value = false
     getList()
@@ -254,7 +248,7 @@ const submitForm = () => {
 const handleDelete = (row) => {
   const deleteIds = row?.id || ids.value
   proxy.$modal.confirm('是否确认删除物资信息编号为"' + deleteIds + '"的数据项？')
-    .then(() => applyApi.deleteApply(deleteIds))
+    .then(() => applyOutApi.deleteOutApply(deleteIds))
     .then(() => {
       getList()
       proxy.$modal.msgSuccess("删除成功")
@@ -263,7 +257,7 @@ const handleDelete = (row) => {
 
 const handleBack = (row) => {
   proxy.$modal.confirm('是否确认归还该物资吗？')
-    .then(() => applyApi.backApply(row.id))
+    .then(() => applyOutApi.backOutApply(row.id))
     .then(() => {
       getList()
       proxy.$modal.msgSuccess("归还成功")
