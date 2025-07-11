@@ -71,6 +71,9 @@ const options = reactive({
   previews: {}               //预览数据
 })
 
+console.log("userStore.avatar",userStore.avatar);
+
+
 /** 编辑头像 */
 function editCropper() {
   open.value = true
